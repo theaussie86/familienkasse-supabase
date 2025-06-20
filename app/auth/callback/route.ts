@@ -6,18 +6,16 @@ interface GitHubUser {
   login: string;
 }
 
-interface GitHubOrg {
-  login: string;
-}
-
 const ALLOWED_EMAILS = process.env.ALLOWED_EMAILS?.split("|") || [];
 
 // Funktion zur Überprüfung der Berechtigung
-async function isAuthorizedUser(session: any) {
+async function isAuthorizedUser(session?: {
+  provider_token: string | null | undefined;
+}) {
   try {
     const response = await fetch("https://api.github.com/user", {
       headers: {
-        Authorization: `Bearer ${session.provider_token}`,
+        Authorization: `Bearer ${session?.provider_token}`,
       },
     });
     const userData: GitHubUser = await response.json();
@@ -50,7 +48,9 @@ export async function GET(request: Request) {
 
     if (!error && data?.session) {
       // Prüfe, ob der Benutzer berechtigt ist
-      const isAuthorized = await isAuthorizedUser(data.session);
+      const isAuthorized = await isAuthorizedUser({
+        provider_token: data.session.provider_token,
+      });
 
       if (!isAuthorized) {
         // Wenn nicht berechtigt, lösche die Session und leite zur Fehlerseite weiter

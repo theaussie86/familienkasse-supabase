@@ -47,6 +47,23 @@ export function LoginForm({
     }
   };
 
+  const handleLoginWithGitHub = async () => {
+    const supabase = createClient();
+    const { error: signInError } = await supabase.auth.signInWithOAuth({
+      provider: "github",
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
+    });
+    if (signInError) {
+      setError(
+        signInError instanceof Error
+          ? signInError.message
+          : "You are not authorized to sign up with GitHub"
+      );
+    }
+  };
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
@@ -56,7 +73,7 @@ export function LoginForm({
             Enter your email below to login to your account
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="flex flex-col gap-4">
           <form onSubmit={handleLogin}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-2">
@@ -102,7 +119,11 @@ export function LoginForm({
                 Sign up
               </Link>
             </div>
+            <div className="mt-4 text-center text-sm">
+              <p className="text-sm text-red-500">{error}</p>
+            </div>
           </form>
+          <Button onClick={handleLoginWithGitHub}>Login with GitHub</Button>
         </CardContent>
       </Card>
     </div>

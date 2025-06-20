@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 export default async function Page({
   searchParams,
 }: {
-  searchParams: Promise<{ error: string }>;
+  searchParams: Promise<{ error: string; message: string }>;
 }) {
   const params = await searchParams;
 
@@ -14,17 +14,21 @@ export default async function Page({
           <Card>
             <CardHeader>
               <CardTitle className="text-2xl">
-                Sorry, something went wrong.
+                Ups, etwas ist schiefgelaufen.
               </CardTitle>
             </CardHeader>
             <CardContent>
               {params?.error ? (
                 <p className="text-sm text-muted-foreground">
-                  Code error: {params.error}
+                  Fehlercode: {params.error}
+                </p>
+              ) : params.message === "unauthorized" ? (
+                <p className="text-sm text-muted-foreground">
+                  Du bist nicht berechtigt, dich mit GitHub anzumelden.
                 </p>
               ) : (
                 <p className="text-sm text-muted-foreground">
-                  An unspecified error occurred.
+                  Ein unbekannter Fehler ist aufgetreten.
                 </p>
               )}
             </CardContent>

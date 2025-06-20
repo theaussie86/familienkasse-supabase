@@ -56,6 +56,23 @@ export function SignUpForm({
     }
   };
 
+  const handleSignupWithGitHub = async () => {
+    const supabase = createClient();
+    const { error: signInError } = await supabase.auth.signInWithOAuth({
+      provider: "github",
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
+    });
+    if (signInError) {
+      setError(
+        signInError instanceof Error
+          ? signInError.message
+          : "You are not authorized to sign up with GitHub"
+      );
+    }
+  };
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
@@ -63,7 +80,7 @@ export function SignUpForm({
           <CardTitle className="text-2xl">Sign up</CardTitle>
           <CardDescription>Create a new account</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="flex flex-col gap-4">
           <form onSubmit={handleSignUp}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-2">
@@ -113,6 +130,7 @@ export function SignUpForm({
               </Link>
             </div>
           </form>
+          <Button onClick={handleSignupWithGitHub}>Sign up with GitHub</Button>
         </CardContent>
       </Card>
     </div>
